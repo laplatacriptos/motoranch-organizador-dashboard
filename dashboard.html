@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTO'S RANCH — Panel del Organizador</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- HEADER -->
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-badge" title="MOTO'S RANCH">
+          <svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true">
+            <circle cx="32" cy="32" r="29" fill="#17171a" stroke="#f59e0b" stroke-width="2.5" />
+            <circle cx="18" cy="40" r="7" fill="none" stroke="#f4f4f5" stroke-width="2.5" />
+            <circle cx="46" cy="40" r="7" fill="none" stroke="#f4f4f5" stroke-width="2.5" />
+            <path d="M18 40 L28 27 L41 27 L46 40 M28 27 L24 19 L19 19 M41 27 L44 20 L48 20"
+                  fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div>
+          <div class="eyebrow">PANEL PRIVADO DEL ORGANIZADOR</div>
+          <h1>MOTO'S RANCH</h1>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <span class="live-pill"><span class="dot"></span> En vivo</span>
+        <button id="resetDemoBtn" class="btn btn-ghost" type="button" title="Restaurar los 10 invitados iniciales">
+          Restaurar demo
+        </button>
+      </div>
+    </header>
+
+    <!-- FILA SUPERIOR: TEMPORIZADOR + GRÁFICO DE TORTA (500 PERSONAS) -->
+    <section class="top-grid" aria-label="Resumen del evento y aforo">
+      <!-- TEMPORIZADOR -->
+      <article class="card timer-card">
+        <div class="card-head">
+          <div>
+            <h2>Temporizador del evento</h2>
+            <p class="muted" id="eventDateLabel">Fecha objetivo sin configurar</p>
+          </div>
+          <button id="toggleDateEditorBtn" class="btn btn-secondary" type="button">
+            Configurar fecha
+          </button>
+        </div>
+
+        <div id="dateEditorPanel" class="date-editor hidden">
+          <label for="eventDateInput">Fecha y hora del evento</label>
+          <div class="date-editor-row">
+            <input type="datetime-local" id="eventDateInput" />
+            <button id="saveEventDateBtn" class="btn btn-primary" type="button">Guardar</button>
+          </div>
+        </div>
+
+        <div class="countdown-grid" id="countdownGrid">
+          <div class="time-box">
+            <span class="time-val" id="cdDays">00</span>
+            <span class="time-lbl">Días</span>
+          </div>
+          <div class="time-box">
+            <span class="time-val" id="cdHours">00</span>
+            <span class="time-lbl">Horas</span>
+          </div>
+          <div class="time-box">
+            <span class="time-val" id="cdMinutes">00</span>
+            <span class="time-lbl">Min</span>
+          </div>
+          <div class="time-box">
+            <span class="time-val" id="cdSeconds">00</span>
+            <span class="time-lbl">Seg</span>
+          </div>
+        </div>
+
+        <p class="timer-note" id="timerStatusText">Cuenta regresiva activa hacia MOTO'S RANCH.</p>
+      </article>
+
+      <!-- GRÁFICO DE TORTA DE 500 PERSONAS -->
+      <article class="card chart-card">
+        <div class="card-head">
+          <div>
+            <h2>Capacidad del evento (500)</h2>
+            <p class="muted">Actualización automática al cargar personas</p>
+          </div>
+          <span class="badge-cap" id="capacityPercentBadge">0%</span>
+        </div>
+
+        <div class="chart-body">
+          <div class="pie-wrapper">
+            <svg id="capacityPieSvg" viewBox="0 0 220 220" class="pie-svg" role="img"
+                 aria-label="Gráfico de torta de capacidad sobre 500 personas">
+              <circle cx="110" cy="110" r="88" fill="#18181c" stroke="#27272d" stroke-width="2" />
+              <g id="pieSlicesGroup"></g>
+              <circle cx="110" cy="110" r="46" fill="#121215" stroke="#27272d" stroke-width="2" />
+              <text x="110" y="105" text-anchor="middle" class="pie-center-num" id="pieCenterCount">0</text>
+              <text x="110" y="124" text-anchor="middle" class="pie-center-sub">de 500</text>
+            </svg>
+          </div>
+
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="swatch swatch-confirmed"></span>
+              <div class="legend-text">
+                <strong>Confirmados</strong>
+                <span id="confirmedCountText">0 personas</span>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="swatch swatch-raffle"></span>
+              <div class="legend-text">
+                <strong>En sorteo</strong>
+                <span id="raffleCountText">0 participantes</span>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="swatch swatch-available"></span>
+              <div class="legend-text">
+                <strong>Cupo disponible</strong>
+                <span id="availableCountText">500 lugares</span>
+              </div>
+            </div>
+            <div class="min-goal-box" id="minGoalBox">
+              Objetivo mínimo (200): <strong id="minGoalStatus">Pendiente</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- CARGA RÁPIDA + LISTADO EN TIEMPO REAL -->
+    <section class="card list-card" aria-label="Registro de asistentes y sorteo">
+      <div class="card-head list-head">
+        <div>
+          <h2>Asistentes confirmados y sorteo</h2>
+          <p class="muted">Cada persona cargada suma al gráfico de 500 y puede participar del sorteo</p>
+        </div>
+
+        <div class="controls-bar">
+          <input type="search" id="searchInput" class="input" placeholder="Buscar por nombre o # sorteo..." />
+          <select id="raffleFilter" class="input select-input" aria-label="Filtrar por sorteo">
+            <option value="all">Todos (sorteo y no sorteo)</option>
+            <option value="yes">Solo participan del sorteo</option>
+            <option value="no">No participan del sorteo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- FORMULARIO DE CARGA -->
+      <form id="addAttendeeForm" class="add-form" autocomplete="off">
+        <div class="field-grow">
+          <label for="attendeeName">Nombre y apellido</label>
+          <input type="text" id="attendeeName" class="input" placeholder="Ej: Lucas Pereyra" required />
+        </div>
+
+        <div class="field-check">
+          <label class="checkbox-label" for="attendeeRaffle">
+            <input type="checkbox" id="attendeeRaffle" checked />
+            <span>Participa del sorteo</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          + Agregar persona
+        </button>
+      </form>
+
+      <p id="formFeedback" class="feedback-msg" role="status" aria-live="polite"></p>
+
+      <!-- TABLA -->
+      <div class="table-wrap">
+        <table class="attendees-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Sorteo</th>
+              <th>N° Sorteo</th>
+              <th class="col-actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="attendeesTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+<!-- APARTADO PARA CONTACTAR AL DESARROLLADOR EN DASHBOARD -->
+    <footer class="dash-dev-footer" aria-label="Contacto con el desarrollador">
+      <p class="dash-dev-text">
+        ¿Te gustó esta invitación digital y querés una para algún evento? Podés
+        <a
+          href="https://wa.me/5492214948539"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="dash-dev-link"
+        >contactar al desarrollador</a>.
+      </p>
+    </footer>
+  <script src="app.js"></script>
+</body>
+</html>
